@@ -239,7 +239,15 @@ class _ProCard extends StatelessWidget {
           const SizedBox(height: 8),
           const _Perk(
             icon: Icons.auto_awesome,
-            text: 'The gold mark, in the app and on the icon',
+            text: 'The gold mark, and a gold home-screen icon',
+          ),
+          const SizedBox(height: 10),
+          // Said up front, both ways round: the launcher icon cannot be
+          // swapped while the app is on screen without Android tearing
+          // the task down, so it changes on the way out.
+          Text(
+            'The home-screen icon changes when you next leave the app.',
+            style: Type.mono.copyWith(fontSize: 11),
           ),
           const SizedBox(height: 14),
           if (pro)
@@ -275,8 +283,8 @@ class _ProCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             pro
-                ? 'Turning it off puts the everyday mark back and hides the '
-                    '$proTimedMinutes-minute run.'
+                ? 'Turning it off puts the everyday mark back and hides '
+                    'the $proTimedMinutes-minute run.'
                 : 'Free. This build has no payments in it — the button just '
                     'turns the extras on.',
             style: Type.mono.copyWith(fontSize: 11),

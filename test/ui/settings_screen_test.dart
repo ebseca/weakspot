@@ -113,6 +113,14 @@ void main() {
       expect(find.textContaining('no payments in it'), findsOneWidget);
     });
 
+    testWidgets('warns that the home-screen icon changes later',
+        (tester) async {
+      await pumpSettings(tester);
+
+      expect(find.textContaining('when you next leave the app'),
+          findsOneWidget);
+    });
+
     testWidgets('subscribing turns it on and is kept', (tester) async {
       final controller = await pumpSettings(tester);
 

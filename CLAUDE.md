@@ -116,14 +116,31 @@ the everyday icon (enabled) and `.LauncherPro` with the gold one
 and disables the other; `SettingsController` calls it whenever `pro`
 changes, and again on every `load()` so the stored flag stays the truth.
 
-Three things that will bite if they are changed:
+Four things that will bite if they are changed:
 
-1. **MainActivity must not carry the LAUNCHER intent-filter.** The aliases
+1. **The swap happens in `onStop`, never while the app is on screen.**
+   Disabling a component the current task was launched *through* makes
+   ActivityManager finish the task: the app vanishes mid-tap and reads as
+   a crash, with nothing in the crash log because nothing threw. This
+   shipped once and was reported as "program crashes when I click on
+   subscription button". `MainActivity` now queues the wish in
+   `pendingPro` and applies it on the way out. An icon that already
+   matches is dropped rather than queued, so the reconcile on every
+   launch never disturbs a task.
+2. **MainActivity must not carry the LAUNCHER intent-filter.** The aliases
    do. Two enabled entries put the app in the drawer twice.
-2. **Enable before disabling.** An instant with no enabled launcher entry
+3. **Enable before disabling.** An instant with no enabled launcher entry
    is what makes an app vanish from the home screen rather than change.
-3. **`DONT_KILL_APP`.** Without it Android restarts the process the moment
-   the component changes, so tapping Subscribe would close the app.
+4. **`DONT_KILL_APP`.** Without it Android restarts the process outright
+   the moment the component changes.
+
+The deferral is visible in the UI rather than hidden: the Pro card says
+"The home-screen icon changes when you next leave the app."
+
+`adb shell pm enable|disable` **cannot** be used to test this — MIUI's
+shell refuses to change another package's component state
+(`SecurityException: Shell cannot change component state`). Only the app
+itself can do it, so the swap has to be tested by tapping.
 
 Verify a build with:
 

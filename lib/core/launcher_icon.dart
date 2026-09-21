@@ -13,10 +13,15 @@ import 'package:flutter/services.dart';
 
 /// Swaps the launcher icon between the everyday mark and the Pro one.
 abstract class LauncherIcon {
-  /// Show the Pro icon, or the everyday one.
+  /// Ask for the Pro icon, or the everyday one.
   ///
-  /// Safe to call with the icon that is already showing — Android treats
-  /// setting a component to the state it is already in as a no-op.
+  /// **Not immediate.** The Android side notes what is wanted and applies
+  /// it when the app leaves the foreground, because disabling a component
+  /// the current task was launched through makes Android finish the task —
+  /// which looks exactly like a crash. See `MainActivity.kt`.
+  ///
+  /// Safe to call with the icon already showing; that is dropped rather
+  /// than queued.
   Future<void> use({required bool pro});
 }
 
