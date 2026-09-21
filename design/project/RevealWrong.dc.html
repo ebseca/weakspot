@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reveal — wrong, with hint</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500&display=swap">
+<style>
+body { margin: 0; background: #15171C; font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+a { color: #5468C4; text-decoration: none; }
+a:hover { color: #6E82D8; }
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #15171C; color: #E7EAF1; display: flex; flex-direction: column; overflow: hidden;">
+
+  <div style="display: flex; align-items: center; gap: 14px; padding: 26px 22px 0 22px;">
+    <a href="Main.dc.html" aria-label="End session" style="width: 40px; height: 40px; margin-left: -10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#8D95A6" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"></path></svg>
+    </a>
+    <div style="flex-grow: 1; height: 5px; border-radius: 3px; background: #262A35; overflow: hidden;">
+      <div style="width: 35%; height: 100%; background: #5468C4; border-radius: 3px;"></div>
+    </div>
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #8D95A6;">7/20</div>
+  </div>
+
+  <div style="display: flex; justify-content: center; padding: 18px 22px 0 22px;">
+    <div style="display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 20px; background: #2A1D1A; border: 1px solid #5A3328;">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#C9633C" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path></svg>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px; color: #C9633C;">NOT QUITE</span>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 14px 22px;">
+    <div style="width: 100%; box-sizing: border-box; padding: 20px; border-radius: 18px; background: #F5F2E9; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+      <span style="font-family: 'Noto Sans JP', 'IBM Plex Sans', sans-serif; font-size: 78px; line-height: 1.08; color: #1A1C22;">ね</span>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 27px; font-weight: 500; color: #4A5060;">ne</span>
+      <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #DCD7C8; width: 100%; display: flex; gap: 9px; align-items: flex-start;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8A8577" stroke-width="1.6" stroke-linecap="round" style="flex-shrink: 0; margin-top: 2px;" aria-hidden="true"><path d="M8 1.8a4.2 4.2 0 00-2.4 7.6c.4.4.6.9.6 1.4h3.6c0-.5.2-1 .6-1.4A4.2 4.2 0 008 1.8zM6.2 13.4h3.6"></path></svg>
+        <span style="font-size: 13px; line-height: 1.5; color: #5C5850;">Starts with a straight vertical spine. <span style="font-family: 'Noto Sans JP', sans-serif; color: #1A1C22;">ぬ</span> (nu) starts with a short cross-stroke instead — no spine.</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 0 22px 8px 22px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px; color: #8D95A6;">LAST 10</span>
+    <div style="display: flex; gap: 4px; align-items: center;">
+      <sc-for list="{{history}}" as="h" hint-placeholder-count="10">
+        <span style="width: 8px; height: 8px; border-radius: 4px; background: {{h.color}};"></span>
+      </sc-for>
+    </div>
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: #C9633C;">4/10</span>
+  </div>
+
+  <div style="padding: 6px 22px 24px 22px; display: flex; flex-direction: column; gap: 9px;">
+    <div style="display: flex; align-items: center; justify-content: center; padding: 15px; border-radius: 13px; background: #1E212A; border: 1px solid #2D323E; color: #565D6C; font-size: 17px; font-weight: 500;">no</div>
+
+    <div style="display: flex; align-items: center; justify-content: center; gap: 9px; padding: 15px; border-radius: 13px; background: #1E2A24; border: 1px solid #5FA37F; color: #7FC9A2; font-size: 17px; font-weight: 600;">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#5FA37F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.3 3.3L13 5"></path></svg>
+      ne
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: center; padding: 15px; border-radius: 13px; background: #1E212A; border: 1px solid #2D323E; color: #565D6C; font-size: 17px; font-weight: 500;">na</div>
+
+    <div style="display: flex; align-items: center; justify-content: center; gap: 9px; padding: 15px; border-radius: 13px; background: #2A1D1A; border: 1px solid #C9633C; color: #E08B5F; font-size: 17px; font-weight: 600;">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#C9633C" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path></svg>
+      nu
+    </div>
+
+    <a href="Results.dc.html" style="margin-top: 3px; display: flex; align-items: center; justify-content: center; padding: 16px; border-radius: 13px; background: #5468C4; color: #FFFFFF; font-size: 16px; font-weight: 600;">Next</a>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const marks = [1, 0, 0, 1, 0, 1, 0, 0, 1, 0];
+    return {
+      history: marks.map((m) => ({ color: m ? '#5FA37F' : '#C9633C' }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-09-20T12:00:00Z" },
+  "title": "Weakspot Screens",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 390, "h": 844, "title": "Your libraries", "is_interactive": true },
+    "Session.dc.html": { "x": 470, "y": 0, "w": 390, "h": 844, "title": "Start a session", "is_interactive": true },
+    "Question.dc.html": { "x": 0, "y": 964, "w": 390, "h": 844, "title": "Question", "is_interactive": true },
+    "RevealRight.dc.html": { "x": 470, "y": 964, "w": 390, "h": 844, "title": "Reveal — correct", "is_interactive": true },
+    "RevealWrong.dc.html": { "x": 940, "y": 964, "w": 390, "h": 844, "title": "Reveal — wrong, with hint", "is_interactive": true },
+    "Results.dc.html": { "x": 0, "y": 1928, "w": 390, "h": 844, "title": "Session results", "is_interactive": true },
+    "Stats.dc.html": { "x": 470, "y": 1928, "w": 390, "h": 844, "title": "Progress and weak spots", "is_interactive": true },
+    "Create.dc.html": { "x": 0, "y": 2892, "w": 390, "h": 844, "title": "Create a library", "is_interactive": true },
+    "Import.dc.html": { "x": 470, "y": 2892, "w": 390, "h": 844, "title": "Bring in the reply", "is_interactive": true },
+    "Roadmap.dc.html": { "x": 0, "y": 3856, "w": 1360, "h": 880, "title": "Scope and build order" }
+  },
+  "order": [
+    "Main.dc.html",
+    "Session.dc.html",
+    "Question.dc.html",
+    "RevealRight.dc.html",
+    "RevealWrong.dc.html",
+    "Results.dc.html",
+    "Stats.dc.html",
+    "Create.dc.html",
+    "Import.dc.html",
+    "Roadmap.dc.html"
+  ],
+  "notes": {
+    "n1": { "x": 0, "y": -280, "text": "The shell", "kind": "title1", "maxW": 860 },
+    "n2": { "x": 0, "y": 684, "text": "The loop", "kind": "title1", "maxW": 1330 },
+    "n3": { "x": 0, "y": 1648, "text": "Progress", "kind": "title1", "maxW": 860 },
+    "n4": { "x": 0, "y": 2612, "text": "Making your own decks", "kind": "title1", "maxW": 860 },
+    "n5": { "x": 0, "y": 3576, "text": "Scope and build order", "kind": "title1", "maxW": 1360 },
+    "n6": { "x": 1370, "y": 964, "w": 300, "text": "Tap an option to walk the flow: a right answer and a wrong one lead to different reveal screens, then on to results.", "color": "blue" }
+  },
+  "designSystems": []
+}

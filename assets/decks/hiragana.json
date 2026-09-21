@@ -1,0 +1,61 @@
+{
+  "deck": "Hiragana",
+  "cards": [
+    { "id": "a", "front": "あ", "back": "a", "hint": "A cross, then a loop that curls back through it. お has a small detached stroke on the right; あ has none.", "distractors": ["o", "nu", "me"] },
+    { "id": "i", "front": "い", "back": "i", "hint": "Two separate strokes, the left one longer. り has them closer and steeper.", "distractors": ["ri", "ko"] },
+    { "id": "u", "front": "う", "back": "u" },
+    { "id": "e", "front": "え", "back": "e" },
+    { "id": "o", "front": "お", "back": "o", "hint": "Like あ, but with a small detached stroke on the upper right.", "distractors": ["a", "na", "mu"] },
+
+    { "id": "ka", "front": "か", "back": "ka" },
+    { "id": "ki", "front": "き", "back": "ki", "hint": "Two horizontal strokes crossed by a curve. さ has only one.", "distractors": ["sa", "chi"] },
+    { "id": "ku", "front": "く", "back": "ku", "hint": "A sharp angle pointing left. へ is a shallow peak.", "distractors": ["he", "shi"] },
+    { "id": "ke", "front": "け", "back": "ke" },
+    { "id": "ko", "front": "こ", "back": "ko", "hint": "Two short horizontal strokes.", "distractors": ["i", "ni"] },
+
+    { "id": "sa", "front": "さ", "back": "sa", "hint": "One horizontal stroke, then a curve opening right. き has two horizontals.", "distractors": ["ki", "chi"] },
+    { "id": "shi", "front": "し", "back": "shi", "hint": "One stroke, running down then hooking up to the right. つ runs across instead.", "distractors": ["tsu", "no"] },
+    { "id": "su", "front": "す", "back": "su", "hint": "Vertical stroke through a horizontal, looping at the bottom.", "distractors": ["mu", "o"] },
+    { "id": "se", "front": "せ", "back": "se" },
+    { "id": "so", "front": "そ", "back": "so", "hint": "A zigzag, then a long diagonal down-left.", "distractors": ["n", "ro"] },
+
+    { "id": "ta", "front": "た", "back": "ta" },
+    { "id": "chi", "front": "ち", "back": "chi", "hint": "Mirror image of さ — the curve opens to the left.", "distractors": ["sa", "ra", "ki"] },
+    { "id": "tsu", "front": "つ", "back": "tsu", "hint": "A single stroke running across and hooking down. し runs downward.", "distractors": ["shi", "u"] },
+    { "id": "te", "front": "て", "back": "te" },
+    { "id": "to", "front": "と", "back": "to" },
+
+    { "id": "na", "front": "な", "back": "na" },
+    { "id": "ni", "front": "に", "back": "ni", "hint": "A vertical spine on the left, then two short horizontals.", "distractors": ["ko", "ke"] },
+    { "id": "nu", "front": "ぬ", "back": "nu", "hint": "Starts with a short cross-stroke — no vertical spine — and ends in a loop. め ends without the loop.", "distractors": ["me", "ne", "wa"] },
+    { "id": "ne", "front": "ね", "back": "ne", "hint": "Vertical spine on the left, and the tail closes into a loop. れ and わ have no loop.", "distractors": ["re", "wa", "nu"] },
+    { "id": "no", "front": "の", "back": "no" },
+
+    { "id": "ha", "front": "は", "back": "ha", "hint": "Vertical spine, one horizontal, then a shape with a tail. ほ adds a second horizontal.", "distractors": ["ho", "ma"] },
+    { "id": "hi", "front": "ひ", "back": "hi" },
+    { "id": "fu", "front": "ふ", "back": "fu" },
+    { "id": "he", "front": "へ", "back": "he", "hint": "A shallow, wide peak. く is a sharp angle pointing left.", "distractors": ["ku"] },
+    { "id": "ho", "front": "ほ", "back": "ho", "hint": "は with one extra horizontal stroke.", "distractors": ["ha", "ma"] },
+
+    { "id": "ma", "front": "ま", "back": "ma", "hint": "Two horizontals crossed by a vertical that loops at the bottom.", "distractors": ["ho", "ha", "mo"] },
+    { "id": "mi", "front": "み", "back": "mi" },
+    { "id": "mu", "front": "む", "back": "mu", "hint": "Like す but with a detached tick on the right.", "distractors": ["su", "o"] },
+    { "id": "me", "front": "め", "back": "me", "hint": "Like ぬ but the tail ends without closing into a loop.", "distractors": ["nu", "a"] },
+    { "id": "mo", "front": "も", "back": "mo", "hint": "A vertical hook crossed by two horizontals.", "distractors": ["ma", "mu"] },
+
+    { "id": "ya", "front": "や", "back": "ya" },
+    { "id": "yu", "front": "ゆ", "back": "yu" },
+    { "id": "yo", "front": "よ", "back": "yo" },
+
+    { "id": "ra", "front": "ら", "back": "ra", "hint": "A short tick, then a curve opening left. ち has a horizontal stroke across the top.", "distractors": ["chi", "ru"] },
+    { "id": "ri", "front": "り", "back": "ri", "hint": "Two strokes, the right one long and curving. い is wider and flatter.", "distractors": ["i"] },
+    { "id": "ru", "front": "る", "back": "ru", "hint": "Ends in a closed loop. ろ ends without one.", "distractors": ["ro", "ra"] },
+    { "id": "re", "front": "れ", "back": "re", "hint": "Vertical spine, and the tail hooks up to the right without looping. ね loops.", "distractors": ["ne", "wa", "nu"] },
+    { "id": "ro", "front": "ろ", "back": "ro", "hint": "The same shape as る, but stops without the loop.", "distractors": ["ru", "so"] },
+
+    { "id": "wa", "front": "わ", "back": "wa", "hint": "Vertical spine, and the tail curves in without looping or hooking out. ね loops, れ hooks.", "distractors": ["ne", "re"] },
+    { "id": "wo", "front": "を", "back": "wo" },
+
+    { "id": "n", "front": "ん", "back": "n", "hint": "One stroke: a small tick, then a long sweep down and up.", "distractors": ["so"] }
+  ]
+}

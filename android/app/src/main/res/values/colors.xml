@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Palette.ground. The app is single-theme dark, so the window behind
+         it is too, whatever the system theme says. -->
+    <color name="ground">#FF15171C</color>
+</resources>

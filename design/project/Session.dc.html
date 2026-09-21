@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Start a session</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=Noto+Sans+JP:wght@400;500&amp;display=swap">
+<style>
+body { margin: 0; background: #15171C; font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+a { color: #5468C4; text-decoration: none; }
+a:hover { color: #6E82D8; }
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #15171C; color: #E7EAF1; display: flex; flex-direction: column; overflow: hidden;">
+
+  <div style="display: flex; align-items: center; gap: 12px; padding: 28px 22px 22px 22px;">
+    <a href="Main.dc.html" aria-label="Back to libraries" style="width: 44px; height: 44px; margin-left: -12px; display: flex; align-items: center; justify-content: center;">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#8D95A6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg>
+    </a>
+    <div style="font-size: 20px; font-weight: 600;">Hiragana</div>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 32px; padding: 0 22px;">
+
+    <div style="display: flex; flex-direction: column; gap: 11px;">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1.2px; color: #8D95A6;">HOW MANY QUESTIONS</div>
+      <div style="display: flex; gap: 10px;">
+        <sc-for list="{{lengths}}" as="opt" hint-placeholder-count="3">
+          <button type="button" onClick="{{opt.pick}}" style="{{opt.style}}">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; font-weight: 600;">{{opt.n}}</span>
+            <span style="font-size: 12px; opacity: 0.75;">{{opt.label}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 9px; padding: 13px 14px; background: #1A1D25; border: 1px solid #2D323E; border-radius: 11px;">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#5468C4" stroke-width="1.6" stroke-linecap="round" style="flex-shrink: 0; margin-top: 1px;" aria-hidden="true"><circle cx="8" cy="8" r="6.2"></circle><path d="M8 7.2v4M8 4.9v.1"></path></svg>
+        <div style="font-size: 13px; line-height: 1.45; color: #B6BDCB;">Your active pool is half the session — <span style="color: #E7EAF1; font-weight: 600;">{{poolText}}</span>. Longer sessions unlock more of the alphabet.</div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 11px;">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1.2px; color: #8D95A6;">WHICH WAY ROUND</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <sc-for list="{{directions}}" as="dir" hint-placeholder-count="3">
+          <button type="button" onClick="{{dir.pick}}" style="{{dir.style}}">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 17px; width: 30px; text-align: center; flex-shrink: 0;">{{dir.glyph}}</span>
+            <span style="display: flex; flex-direction: column; gap: 2px; text-align: left;">
+              <span style="font-size: 14px; font-weight: 600;">{{dir.name}}</span>
+              <span style="font-size: 12px; opacity: 0.72;">{{dir.sub}}</span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="padding: 18px 22px 26px 22px;">
+    <a href="Question.dc.html" style="display: flex; align-items: center; justify-content: center; padding: 17px; border-radius: 13px; background: #5468C4; color: #FFFFFF; font-size: 16px; font-weight: 600;">Start session</a>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { len: 20, dir: 'fwd' };
+  }
+  pillStyle(on) {
+    return 'flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 13px 0; border-radius: 12px; cursor: pointer; font-family: inherit; '
+      + (on
+        ? 'background: #5468C4; border: 1px solid #5468C4; color: #FFFFFF;'
+        : 'background: #1E212A; border: 1px solid #2D323E; color: #B6BDCB;');
+  }
+  rowStyle(on) {
+    return 'display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; cursor: pointer; font-family: inherit; text-align: left; '
+      + (on
+        ? 'background: #232842; border: 1px solid #5468C4; color: #E7EAF1;'
+        : 'background: #1E212A; border: 1px solid #2D323E; color: #B6BDCB;');
+  }
+  renderVals() {
+    const len = this.state.len;
+    const dir = this.state.dir;
+    return {
+      poolText: (len / 2) + ' cards',
+      lengths: [
+        { n: 10, label: 'quick' },
+        { n: 20, label: 'normal' },
+        { n: 40, label: 'long' }
+      ].map((o) => ({
+        n: o.n, label: o.label,
+        style: this.pillStyle(len === o.n),
+        pick: () => this.setState({ len: o.n })
+      })),
+      directions: [
+        { id: 'fwd', glyph: '→', name: 'Character to sound', sub: 'あ → a · tests reading' },
+        { id: 'rev', glyph: '←', name: 'Sound to character', sub: 'a → あ · tests writing' },
+        { id: 'mix', glyph: '⇄', name: 'Mixed', sub: 'both, scored separately' }
+      ].map((o) => ({
+        glyph: o.glyph, name: o.name, sub: o.sub,
+        style: this.rowStyle(dir === o.id),
+        pick: () => this.setState({ dir: o.id })
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

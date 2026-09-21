@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scope and build order</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500&display=swap">
+<style>
+body { margin: 0; background: #15171C; font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+a { color: #5468C4; text-decoration: none; }
+a:hover { color: #6E82D8; }
+</style>
+</helmet>
+<div style="width: 1360px; height: 880px; box-sizing: border-box; background: #15171C; color: #E7EAF1; display: flex; flex-direction: column; padding: 44px 48px; gap: 30px; overflow: hidden;">
+
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 40px;">
+    <div style="display: flex; flex-direction: column; gap: 7px;">
+      <div style="font-size: 30px; font-weight: 700; letter-spacing: -0.5px;">Scope and build order</div>
+      <div style="font-size: 15px; color: #8D95A6; max-width: 560px; line-height: 1.5;">Everything below is settled. Each phase ends with something you can actually open on your phone.</div>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <sc-for list="{{badges}}" as="b" hint-placeholder-count="3">
+        <div style="padding: 8px 14px; border-radius: 20px; background: #1E212A; border: 1px solid #2D323E; font-size: 13px; color: #B6BDCB;">{{b.text}}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 13px;">
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1.4px; color: #8D95A6;">DECISIONS LOCKED</div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 20px;">
+      <sc-for list="{{decisions}}" as="d" hint-placeholder-count="12">
+        <div style="display: flex; flex-direction: column; gap: 4px; padding-left: 13px; border-left: 2px solid #2D323E;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.9px; color: #6E7686;">{{d.label}}</span>
+          <span style="font-size: 13.5px; line-height: 1.4; color: #D5DAE4;">{{d.value}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 13px; flex-grow: 1;">
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1.4px; color: #8D95A6;">BUILD ORDER</div>
+    <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; flex-grow: 1;">
+      <sc-for list="{{phases}}" as="p" hint-placeholder-count="5">
+        <div style="display: flex; flex-direction: column; gap: 13px; padding: 18px; border-radius: 14px; background: #1E212A; border: 1px solid #2D323E; border-top: 3px solid {{p.accent}};">
+          <div style="display: flex; flex-direction: column; gap: 5px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px; color: {{p.accent}};">PHASE {{p.n}}</span>
+            <span style="font-size: 16px; font-weight: 600; line-height: 1.25;">{{p.title}}</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 7px; flex-grow: 1;">
+            <sc-for list="{{p.items}}" as="it" hint-placeholder-count="4">
+              <div style="display: flex; gap: 8px; align-items: flex-start;">
+                <span style="flex-shrink: 0; width: 4px; height: 4px; border-radius: 2px; background: #4A5260; margin-top: 7px;"></span>
+                <span style="font-size: 12.5px; line-height: 1.45; color: #A8B0BF;">{{it.text}}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding-top: 11px; border-top: 1px solid #2D323E; display: flex; flex-direction: column; gap: 3px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.9px; color: #6E7686;">YOU CAN</span>
+            <span style="font-size: 12.5px; line-height: 1.4; color: {{p.accent}}; font-weight: 500;">{{p.ships}}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 12px; padding-top: 2px;">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 1.2px; color: #6E7686;">PARKED</span>
+    <span style="font-size: 13px; color: #8D95A6;">Difficulty setting (3/4/6 options, lookalike distractors) · deck export · editing cards in-app · streaks and reminders — the schema already leaves room for all four.</span>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1360,"height":880}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      badges: [
+        { text: 'Flutter' },
+        { text: 'Fully offline' },
+        { text: 'Android + Windows' }
+      ],
+      decisions: [
+        { label: 'CARD MODEL', value: 'A note makes 1–2 cards, one per direction, scored separately' },
+        { label: 'CARD FIELDS', value: 'front, back, optional hint — hint shows only on reveal' },
+        { label: 'ANSWERING', value: 'Always 4 options; AI distractors when supplied, else sampled from the deck' },
+        { label: 'DIRECTION', value: 'Chosen at session start: → reading, ← writing, ⇄ mixed' },
+        { label: 'SESSION LENGTH', value: '10, 20 or 40 questions, picked up front' },
+        { label: 'ACTIVE POOL', value: 'Half the session length; grows to fit, never shrinks' },
+        { label: 'NEW CARDS', value: 'Batches of 5; next batch unlocks at 70% over last 10' },
+        { label: 'UNLOCK GATE', value: 'Under 4 attempts, a card neither blocks nor helps' },
+        { label: 'WHAT GETS ASKED', value: 'Worst win rate over last 10, then one picked at random' },
+        { label: 'REVIEW SLOTS', value: '20% of every session goes to mastered cards' },
+        { label: 'MASTERY BANDS', value: 'New · under 50% · 50–89% · 90%+' },
+        { label: 'MAKING DECKS', value: 'Copy a prompt out, paste or import the reply back' }
+      ],
+      phases: [
+        {
+          n: '1', accent: '#5468C4', title: 'Shell and storage',
+          items: [
+            { text: 'Flutter project, Android + Windows targets' },
+            { text: 'Note and card tables, local SQLite' },
+            { text: 'Hiragana and katakana bundled as assets' },
+            { text: 'Library list with band bars' }
+          ],
+          ships: 'Open the app and see your libraries'
+        },
+        {
+          n: '2', accent: '#5468C4', title: 'The loop',
+          items: [
+            { text: 'Session setup: length and direction' },
+            { text: 'Question, 4 options, reveal' },
+            { text: 'Distractor sampling from the deck' },
+            { text: 'Hint on the reveal side' }
+          ],
+          ships: 'Actually study and get scored'
+        },
+        {
+          n: '3', accent: '#D7A13F', title: 'Scoring and progression',
+          items: [
+            { text: 'Rolling last-10 window per card' },
+            { text: 'Worst-first picker with random tiebreak' },
+            { text: 'Batches of 5, 70% unlock gate' },
+            { text: '20% review slots for mastered cards' }
+          ],
+          ships: 'Feel it hunt your weak spots'
+        },
+        {
+          n: '4', accent: '#D7A13F', title: 'Results and stats',
+          items: [
+            { text: 'End-of-session results page' },
+            { text: 'Full-alphabet grid in four bands' },
+            { text: 'Reading vs writing split' },
+            { text: 'Needs-work list with last-10 dots' }
+          ],
+          ships: 'See exactly what you do not know'
+        },
+        {
+          n: '5', accent: '#5FA37F', title: 'Your own decks',
+          items: [
+            { text: 'Topic box and prompt generator' },
+            { text: 'Paste box and file import' },
+            { text: 'Validator naming the exact bad card' },
+            { text: 'Deck size shown before you commit' }
+          ],
+          ships: 'Learn anything, not just kana'
+        }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

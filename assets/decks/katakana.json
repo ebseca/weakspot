@@ -1,0 +1,61 @@
+{
+  "deck": "Katakana",
+  "cards": [
+    { "id": "a", "front": "ア", "back": "a" },
+    { "id": "i", "front": "イ", "back": "i" },
+    { "id": "u", "front": "ウ", "back": "u", "hint": "ワ with a short mark added on top.", "distractors": ["wa", "ku"] },
+    { "id": "e", "front": "エ", "back": "e", "hint": "Three strokes, like the kanji 工.", "distractors": ["ko", "yu"] },
+    { "id": "o", "front": "オ", "back": "o" },
+
+    { "id": "ka", "front": "カ", "back": "ka" },
+    { "id": "ki", "front": "キ", "back": "ki" },
+    { "id": "ku", "front": "ク", "back": "ku", "hint": "A short top stroke and a long diagonal. タ adds a stroke through it; ワ turns square at the top right.", "distractors": ["ta", "wa"] },
+    { "id": "ke", "front": "ケ", "back": "ke" },
+    { "id": "ko", "front": "コ", "back": "ko", "hint": "Two strokes forming a bracket that opens downward.", "distractors": ["yu", "e"] },
+
+    { "id": "sa", "front": "サ", "back": "sa" },
+    { "id": "shi", "front": "シ", "back": "shi", "hint": "The two short marks sit stacked on the left, and the long stroke sweeps UP from the bottom left. ツ's marks sit along the top.", "distractors": ["tsu", "n", "so"] },
+    { "id": "su", "front": "ス", "back": "su", "hint": "A horizontal, then a diagonal falling to the left. ヌ adds a cross-stroke.", "distractors": ["nu"] },
+    { "id": "se", "front": "セ", "back": "se" },
+    { "id": "so", "front": "ソ", "back": "so", "hint": "One short mark at the top, then a long stroke falling DOWN to the left. ン sweeps up instead.", "distractors": ["n", "shi", "tsu"] },
+
+    { "id": "ta", "front": "タ", "back": "ta", "hint": "ク with an extra short stroke through the middle.", "distractors": ["ku", "na"] },
+    { "id": "chi", "front": "チ", "back": "chi", "hint": "Like テ, but the last stroke curves away to the left.", "distractors": ["te"] },
+    { "id": "tsu", "front": "ツ", "back": "tsu", "hint": "The two short marks sit along the TOP, and the long stroke falls down to the left. シ's marks stack on the left.", "distractors": ["shi", "so", "n"] },
+    { "id": "te", "front": "テ", "back": "te", "hint": "Two horizontals with a straight stroke down the middle. チ curves at the bottom.", "distractors": ["chi"] },
+    { "id": "to", "front": "ト", "back": "to" },
+
+    { "id": "na", "front": "ナ", "back": "na", "hint": "A horizontal crossed by a hooked vertical.", "distractors": ["me", "ta"] },
+    { "id": "ni", "front": "ニ", "back": "ni", "hint": "Two plain horizontal strokes.", "distractors": ["ko", "e"] },
+    { "id": "nu", "front": "ヌ", "back": "nu", "hint": "ス with an extra cross-stroke.", "distractors": ["su", "me"] },
+    { "id": "ne", "front": "ネ", "back": "ne" },
+    { "id": "no", "front": "ノ", "back": "no", "hint": "A single diagonal falling to the left.", "distractors": ["so", "n"] },
+
+    { "id": "ha", "front": "ハ", "back": "ha" },
+    { "id": "hi", "front": "ヒ", "back": "hi" },
+    { "id": "fu", "front": "フ", "back": "fu", "hint": "One stroke: across the top, then down to the left. ワ closes on the left.", "distractors": ["wa", "ku"] },
+    { "id": "he", "front": "ヘ", "back": "he", "hint": "A shallow wide peak — all but identical to hiragana へ.", "distractors": ["ku"] },
+    { "id": "ho", "front": "ホ", "back": "ho" },
+
+    { "id": "ma", "front": "マ", "back": "ma" },
+    { "id": "mi", "front": "ミ", "back": "mi" },
+    { "id": "mu", "front": "ム", "back": "mu" },
+    { "id": "me", "front": "メ", "back": "me", "hint": "Two crossing diagonals, nothing else.", "distractors": ["na", "nu"] },
+    { "id": "mo", "front": "モ", "back": "mo" },
+
+    { "id": "ya", "front": "ヤ", "back": "ya" },
+    { "id": "yu", "front": "ユ", "back": "yu", "hint": "A short stroke, then a long horizontal across the base.", "distractors": ["ko", "e"] },
+    { "id": "yo", "front": "ヨ", "back": "yo" },
+
+    { "id": "ra", "front": "ラ", "back": "ra" },
+    { "id": "ri", "front": "リ", "back": "ri" },
+    { "id": "ru", "front": "ル", "back": "ru" },
+    { "id": "re", "front": "レ", "back": "re" },
+    { "id": "ro", "front": "ロ", "back": "ro", "hint": "A closed square.", "distractors": ["yo", "ko"] },
+
+    { "id": "wa", "front": "ワ", "back": "wa", "hint": "Like ク but square at the top right. ウ is ワ with a mark on top.", "distractors": ["u", "ku", "fu"] },
+    { "id": "wo", "front": "ヲ", "back": "wo" },
+
+    { "id": "n", "front": "ン", "back": "n", "hint": "One short mark on the left, then a long stroke sweeping UP from the bottom left. ソ falls down instead.", "distractors": ["so", "shi", "tsu"] }
+  ]
+}
