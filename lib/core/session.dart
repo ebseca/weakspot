@@ -67,6 +67,32 @@ class CardRef {
   int get hashCode => Object.hash(note.id, direction);
 }
 
+/// One card as a single run saw it.
+///
+/// Deliberately not the card's stored record: the results page reports
+/// what just happened, which is a different question from how well the
+/// card is known overall. A card answered twice here shows two marks even
+/// if it has a hundred behind it.
+class RunCard {
+  RunCard({required this.note, required this.direction});
+
+  final Note note;
+  final Direction direction;
+
+  /// Every answer in this run, in order.
+  final List<bool> answers = [];
+
+  int get asked => answers.length;
+
+  int get correct => answers.where((a) => a).length;
+
+  double get winRate => asked == 0 ? 0 : correct / asked;
+
+  String get prompt => note.prompt(direction);
+
+  String get answer => note.answer(direction);
+}
+
 /// How a session chooses what to ask and when to stop.
 enum GameMode {
   /// Hunts your weak spots over a fixed number of questions. The default,
@@ -103,6 +129,8 @@ class SessionConfig {
     required this.mode,
     this.game = GameMode.practice,
     this.duration,
+    this.options = optionCount,
+    this.poolTarget = unmasteredTarget,
   });
 
   /// Questions to ask. Ignored by [GameMode.timed], which runs on
@@ -115,6 +143,14 @@ class SessionConfig {
 
   /// How long a timed run lasts. Null for the other modes.
   final Duration? duration;
+
+  /// How many choices a question shows. Defaults to [optionCount]; the
+  /// difficulty setting is what moves it.
+  final int options;
+
+  /// Unmastered cards to hold in play. Defaults to [unmasteredTarget];
+  /// the pacing setting is what moves it.
+  final int poolTarget;
 
   bool get isTimed => game.isTimed;
 }
@@ -246,11 +282,16 @@ CardRef _chooseAvoiding(List<CardRef> pool, Random random, CardRef? avoid) {
 class Session {
   Session({
     required Library library,
-    required this.config,
+    required SessionConfig config,
     Random? random,
-  })  : _random = random ?? Random(),
+        // Not `this.config`: the pool has to be topped up to the size the
+        // config asks for, and an initialising formal is not in scope for
+        // the initialiser beside it.
+        // ignore: prefer_initializing_formals
+  })  : config = config,
+        _random = random ?? Random(),
         _poolAtStart = Set.unmodifiable(library.unlockedIds),
-        _library = topUpPool(library) {
+        _library = topUpPool(library, target: config.poolTarget) {
     _reviewSlots = _chooseReviewSlots();
     _current = _build();
   }
@@ -269,6 +310,9 @@ class Session {
   int _asked = 0;
   int _correct = 0;
   int _introduced = 0;
+
+  /// What this run has asked, keyed by card, in first-asked order.
+  final Map<String, RunCard> _run = {};
 
   /// The library including every answer recorded so far.
   Library get library => _library;
@@ -313,6 +357,29 @@ class Session {
   /// How many notes were in play before this session started.
   int get poolAtStart => _poolAtStart.length;
 
+  /// Every card this run asked, worst first.
+  ///
+  /// Worst first because the results page is a to-do list, not a
+  /// scoreboard: what you dropped belongs at the top where it is read,
+  /// not buried under the ones you got right. Cards tied on win rate keep
+  /// the order they were first asked in, so the page is stable.
+  List<RunCard> get runCards {
+    final cards = _run.values.toList();
+    final order = {
+      for (var i = 0; i < cards.length; i++) cards[i]: i,
+    };
+    cards.sort((a, b) {
+      final byRate = a.winRate.compareTo(b.winRate);
+      if (byRate != 0) return byRate;
+      return order[a]!.compareTo(order[b]!);
+    });
+    return List.unmodifiable(cards);
+  }
+
+  /// Cards this run got wrong at least once.
+  int get shakyCount =>
+      _run.values.where((card) => card.correct < card.asked).length;
+
   Question get current {
     final question = _current;
     if (question == null) {
@@ -345,10 +412,18 @@ class Session {
     _asked += 1;
     if (right) _correct += 1;
 
+    _run
+        .putIfAbsent(
+          cardKey(question.note.id, question.direction),
+          () => RunCard(note: question.note, direction: question.direction),
+        )
+        .answers
+        .add(right);
+
     _library = _library.recording(question.note.id, question.direction, right);
     // Mastering something opens the next card straight away, so the pool
     // never runs dry mid-session and quitting early costs nothing.
-    _library = topUpPool(_library);
+    _library = topUpPool(_library, target: config.poolTarget);
   }
 
   /// End a timed run because the clock ran out.
@@ -436,12 +511,13 @@ class Session {
         note: choice.note,
         direction: choice.direction,
         random: _random,
+        count: config.options,
       ),
     );
   }
 }
 
-/// The answer plus up to [optionCount] - 1 wrong options, shuffled.
+/// The answer plus up to [count] - 1 wrong options, shuffled.
 ///
 /// Distractors the deck author supplied are preferred, because they were
 /// chosen to be genuinely confusable. They are written as wrong *backs*
@@ -453,6 +529,7 @@ List<String> buildOptions({
   required Note note,
   required Direction direction,
   required Random random,
+  int count = optionCount,
 }) {
   final answer = note.answer(direction);
   final options = <String>{answer};
@@ -460,13 +537,13 @@ List<String> buildOptions({
   final byBack = {for (final n in library.notes) n.back: n};
 
   for (final distractor in note.distractors) {
-    if (options.length >= optionCount) break;
+    if (options.length >= count) break;
     final source = byBack[distractor];
     if (source == null || source.id == note.id) continue;
     options.add(source.answer(direction));
   }
 
-  if (options.length < optionCount) {
+  if (options.length < count) {
     // Prefer unlocked notes so options stay inside what the player has
     // seen; fall back to the whole deck for a pool too small to fill four
     // slots.
@@ -474,7 +551,7 @@ List<String> buildOptions({
       ..._shuffled(library.unlocked.toList(), random),
       ..._shuffled(library.notes, random),
     ]) {
-      if (options.length >= optionCount) break;
+      if (options.length >= count) break;
       if (source.id == note.id) continue;
       options.add(source.answer(direction));
     }

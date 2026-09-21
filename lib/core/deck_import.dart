@@ -238,8 +238,18 @@ String _clip(String value) =>
 ///
 /// Kept beside the parser on purpose: the shape asked for here and the
 /// shape accepted there must not drift apart.
-String buildDeckPrompt(String topic) {
+///
+/// [language] is the English name of the language the answers and hints
+/// should be written in, or null for English — which asks for nothing,
+/// so the prompt reads exactly as it always has. Taken as a plain string
+/// rather than the settings enum to keep this file free of anything but
+/// the model.
+String buildDeckPrompt(String topic, {String? language}) {
   final cleaned = topic.trim().isEmpty ? '[what you want to learn]' : topic.trim();
+  final languageRule = language == null
+      ? ''
+      : '\n- write every "back" and every "hint" in $language. The '
+          '"front" stays in\n  the language being learned.';
   return '''
 You are helping build a flashcard deck.
 
@@ -278,6 +288,6 @@ Rules:
   vocabulary list is reversible. A quiz — "what does X do?" — is not; set
   it to false so the app does not ask nonsense questions.
 - Order the cards the way they should be learned. New material is opened
-  from the top of the list as earlier cards are mastered.
+  from the top of the list as earlier cards are mastered.$languageRule
 ''';
 }

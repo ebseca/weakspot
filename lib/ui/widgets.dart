@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../core/model.dart';
+import 'logo.dart';
 import 'theme.dart';
 
 /// The last ten answers as a row of dots, oldest on the left.
@@ -147,11 +148,20 @@ class ChoiceRow<T> extends StatelessWidget {
     required this.onChanged,
     required this.headline,
     this.caption,
+    this.isLocked,
+    this.onLocked,
   });
 
   final List<T> values;
   final T selected;
   final ValueChanged<T> onChanged;
+
+  /// Whether a value is shown but not yet available. A locked choice is
+  /// still on screen — hiding it would leave no way to find out it
+  /// exists — but tapping it calls [onLocked] instead of choosing it.
+  final bool Function(T)? isLocked;
+
+  final ValueChanged<T>? onLocked;
 
   /// The big line inside each choice.
   final String Function(T) headline;
@@ -166,12 +176,18 @@ class ChoiceRow<T> extends StatelessWidget {
         for (var i = 0; i < values.length; i++) ...[
           if (i > 0) const SizedBox(width: 10),
           Expanded(
-            child: _Choice(
-              selected: values[i] == selected,
-              onTap: () => onChanged(values[i]),
-              headline: headline(values[i]),
-              caption: caption?.call(values[i]),
-            ),
+            child: Builder(builder: (context) {
+              final value = values[i];
+              final locked = isLocked?.call(value) ?? false;
+              return _Choice(
+                selected: !locked && value == selected,
+                locked: locked,
+                onTap: () =>
+                    locked ? onLocked?.call(value) : onChanged(value),
+                headline: headline(value),
+                caption: caption?.call(value),
+              );
+            }),
           ),
         ],
       ],
@@ -185,6 +201,7 @@ class _Choice extends StatelessWidget {
     required this.onTap,
     required this.headline,
     this.caption,
+    this.locked = false,
   });
 
   final bool selected;
@@ -192,10 +209,14 @@ class _Choice extends StatelessWidget {
   final String headline;
   final String? caption;
 
+  /// Drawn receded, with a padlock where the caption goes.
+  final bool locked;
+
   @override
   Widget build(BuildContext context) {
     return Semantics(
       selected: selected,
+      enabled: !locked,
       button: true,
       child: InkWell(
         onTap: onTap,
@@ -217,10 +238,18 @@ class _Choice extends StatelessWidget {
                   fontFamily: monoFamily,
                   fontSize: 21,
                   fontWeight: FontWeight.w600,
-                  color: selected ? Colors.white : Palette.text,
+                  color: locked
+                      ? Palette.faint
+                      : selected
+                          ? Colors.white
+                          : Palette.text,
                 ),
               ),
-              if (caption != null) ...[
+              if (locked) ...[
+                const SizedBox(height: 4),
+                const Icon(Icons.lock_outline,
+                    size: 13, color: MarkColors.proText),
+              ] else if (caption != null) ...[
                 const SizedBox(height: 3),
                 Text(
                   caption!,

@@ -138,7 +138,7 @@ int unmasteredCount(Library library) => library.unlocked
     .where((note) => bandForNote(library, note.id) != Band.mastered)
     .length;
 
-/// Open notes until [unmasteredTarget] of them are unmastered.
+/// Open notes until [target] of them are unmastered.
 ///
 /// Takes them from the front of what is still locked, so pacing follows
 /// deck order even when cards have been opened out of it by hand. Every
@@ -146,8 +146,11 @@ int unmasteredCount(Library library) => library.unlocked
 /// lands exactly on the target. Called after each answer, which is what
 /// turns mastering a card into new material arriving immediately rather
 /// than at the end of a session you might never finish.
-Library topUpPool(Library library) {
-  final needed = unmasteredTarget - unmasteredCount(library);
+///
+/// [target] defaults to [unmasteredTarget] and is overridden by the
+/// player's pacing setting.
+Library topUpPool(Library library, {int target = unmasteredTarget}) {
+  final needed = target - unmasteredCount(library);
   if (needed <= 0) return library;
   return openNext(library, needed);
 }

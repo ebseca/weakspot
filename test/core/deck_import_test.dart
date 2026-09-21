@@ -229,5 +229,21 @@ void main() {
     test('has a placeholder when nothing was typed', () {
       expect(buildDeckPrompt('  '), contains('[what you want to learn]'));
     });
+
+    test('asks for a language only when one is given', () {
+      expect(buildDeckPrompt('thai alphabet'), isNot(contains('write every')));
+
+      final turkish =
+          buildDeckPrompt('thai alphabet', language: 'Turkish');
+      expect(turkish, contains('write every "back" and every "hint" in '
+          'Turkish'));
+      expect(turkish, contains('The "front" stays in'));
+    });
+
+    test('a language does not disturb the shape the parser reads', () {
+      final prompt = buildDeckPrompt('kana', language: 'Turkish');
+      expect(prompt, contains('"cards"'));
+      expect(prompt, contains('"reversible"'));
+    });
   });
 }

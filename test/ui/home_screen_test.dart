@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:weakspot/core/model.dart';
+import 'package:weakspot/core/settings.dart';
 import 'package:weakspot/core/store.dart';
 import 'package:weakspot/main.dart';
 
+import '../core/settings_test.dart' show testSettings;
 import '../core/store_test.dart' show FakeStore, fakeAssets;
 
-Future<void> pumpApp(WidgetTester tester, LibraryRepository repo) async {
-  await tester.pumpWidget(WeakspotApp(repository: repo));
+Future<void> pumpApp(
+  WidgetTester tester,
+  LibraryRepository repo, {
+  Settings settings = const Settings(),
+}) async {
+  await tester.pumpWidget(
+    WeakspotApp(repository: repo, settings: testSettings(settings)),
+  );
   await tester.pumpAndSettle();
 }
 
@@ -231,5 +239,41 @@ void main() {
     await pumpApp(tester, repo);
 
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the settings button opens settings', (tester) async {
+    final repo = LibraryRepository(store: FakeStore(), assetLoader: fakeAssets);
+    await pumpApp(tester, repo);
+
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Settings'), findsOneWidget);
+    expect(find.text('Weakspot Pro'), findsOneWidget);
+  });
+
+  testWidgets('subscribing changes the mark on the way back', (tester) async {
+    final repo = LibraryRepository(store: FakeStore(), assetLoader: fakeAssets);
+    await pumpApp(tester, repo);
+
+    expect(find.text('PRO'), findsNothing);
+
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Subscribe now'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Back to libraries'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Weakspot'), findsOneWidget);
+    expect(find.text('PRO'), findsOneWidget);
+  });
+
+  testWidgets('a Pro install shows the badge from the first frame',
+      (tester) async {
+    final repo = LibraryRepository(store: FakeStore(), assetLoader: fakeAssets);
+    await pumpApp(tester, repo, settings: const Settings(pro: true));
+
+    expect(find.text('PRO'), findsOneWidget);
   });
 }

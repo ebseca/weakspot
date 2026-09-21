@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:weakspot/core/settings.dart';
 import 'package:weakspot/core/store.dart';
 import 'package:weakspot/ui/create_library_screen.dart';
 import 'package:weakspot/ui/theme.dart';
 
+import '../core/settings_test.dart' show testSettings;
 import '../core/store_test.dart' show FakeStore, fakeAssets;
 
 /// Captures what the app puts on the clipboard.
@@ -26,13 +28,17 @@ class ClipboardSpy {
   }
 }
 
-Future<void> pumpCreate(WidgetTester tester) async {
+Future<void> pumpCreate(
+  WidgetTester tester, {
+  Settings settings = const Settings(),
+}) async {
   await tester.pumpWidget(
     MaterialApp(
       theme: buildTheme(),
       home: CreateLibraryScreen(
         repository:
             LibraryRepository(store: FakeStore(), assetLoader: fakeAssets),
+        settings: testSettings(settings),
       ),
     ),
   );

@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import '../core/model.dart';
 import '../core/rules.dart';
 import '../core/session.dart';
+import '../core/settings.dart';
 import '../core/store.dart';
 import 'session_screen.dart';
+import 'settings_screen.dart';
 import 'stats_screen.dart';
 import 'theme.dart';
 import 'widgets.dart';
@@ -17,10 +19,12 @@ class SessionSetupScreen extends StatefulWidget {
     super.key,
     required this.library,
     required this.repository,
+    required this.settings,
   });
 
   final Library library;
   final LibraryRepository repository;
+  final SettingsController settings;
 
   @override
   State<SessionSetupScreen> createState() => _SessionSetupScreenState();
@@ -40,9 +44,35 @@ class _SessionSetupScreenState extends State<SessionSetupScreen> {
 
   bool get _oneWay => !_library.reversible;
 
+  Settings get _prefs => widget.settings.settings;
+
   /// What the session will actually open with, including anything the
   /// top-up will pull in the moment it starts.
-  int get _pool => topUpPool(_library).unlockedCount;
+  int get _pool =>
+      topUpPool(_library, target: _prefs.cardsInPlay).unlockedCount;
+
+  /// Timed lengths, with the Pro one always on the end.
+  ///
+  /// Shown locked rather than hidden: a choice that only appears once you
+  /// already know about it is a choice nobody finds.
+  static final List<int> _minuteChoices = [...timedMinutes, proTimedMinutes];
+
+  bool _isLocked(int minutes) =>
+      minutes == proTimedMinutes && !_prefs.pro;
+
+  Future<void> _openSettings() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SettingsScreen(controller: widget.settings),
+      ),
+    );
+    if (!mounted) return;
+    // Turning Pro off while 10 minutes was selected would otherwise start
+    // a run on a length that is no longer offered.
+    setState(() {
+      if (_isLocked(_minutes)) _minutes = timedMinutes.last;
+    });
+  }
 
   Future<void> _openStats() async {
     final updated = await Navigator.of(context).push<Library>(
@@ -63,11 +93,14 @@ class _SessionSetupScreenState extends State<SessionSetupScreen> {
         builder: (_) => SessionScreen(
           library: _library,
           repository: widget.repository,
+          settings: widget.settings,
           config: SessionConfig(
             length: _length,
             mode: _mode,
             game: _game,
             duration: _game.isTimed ? Duration(minutes: _minutes) : null,
+            options: _prefs.optionCount,
+            poolTarget: _prefs.cardsInPlay,
           ),
         ),
       ),
@@ -134,10 +167,12 @@ class _SessionSetupScreenState extends State<SessionSetupScreen> {
                       const SizedBox(height: 11),
                       if (_game.isTimed)
                         ChoiceRow<int>(
-                          values: timedMinutes,
+                          values: _minuteChoices,
                           selected: _minutes,
                           onChanged: (value) =>
                               setState(() => _minutes = value),
+                          isLocked: _isLocked,
+                          onLocked: (_) => _openSettings(),
                           headline: (value) => '$value',
                           caption: (value) =>
                               value == 1 ? 'minute' : 'minutes',

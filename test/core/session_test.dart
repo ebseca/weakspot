@@ -669,4 +669,136 @@ void main() {
       expect(sawHint, isTrue);
     });
   });
+
+  group('the run log', () {
+    test('records every answer of the run, per card and direction', () {
+      final session = Session(
+        library: kana(unlocked: 4),
+        config: const SessionConfig(length: 8, mode: DirectionMode.forward),
+        random: Random(5),
+      );
+      final asked = tallyAsked(session, correct: true);
+
+      expect(session.runCards, isNotEmpty);
+      expect(
+        session.runCards.fold<int>(0, (sum, c) => sum + c.asked),
+        session.asked,
+        reason: 'every answer lands in exactly one card',
+      );
+      for (final card in session.runCards) {
+        expect(card.asked, asked[card.note.id]);
+        expect(card.correct, card.asked, reason: 'all answered correctly');
+        expect(card.direction, Direction.forward);
+      }
+    });
+
+    test('a run that got everything wrong reports it', () {
+      final session = Session(
+        library: kana(unlocked: 4),
+        config: const SessionConfig(length: 6, mode: DirectionMode.forward),
+        random: Random(5),
+      );
+      tallyAsked(session, correct: false);
+
+      expect(session.correct, 0);
+      expect(session.shakyCount, session.runCards.length);
+      for (final card in session.runCards) {
+        expect(card.correct, 0);
+        expect(card.winRate, 0);
+      }
+    });
+
+    test('is ordered worst first', () {
+      final session = Session(
+        library: kana(unlocked: 4),
+        config: const SessionConfig(length: 12, mode: DirectionMode.forward),
+        random: Random(7),
+      );
+      var guard = 0;
+      var right = true;
+      while (!session.isComplete && guard++ < 100) {
+        final question = session.current;
+        // Alternate, so the run has a spread of win rates to sort.
+        answerWith(
+          session,
+          right
+              ? question.answer
+              : question.options.firstWhere((o) => o != question.answer),
+        );
+        right = !right;
+        session.advance();
+      }
+
+      final cards = session.runCards;
+      expect(cards.length, greaterThan(1));
+      for (var i = 1; i < cards.length; i++) {
+        expect(cards[i - 1].winRate, lessThanOrEqualTo(cards[i].winRate));
+      }
+    });
+
+    test('counts the same note twice when both directions were asked', () {
+      final session = Session(
+        library: kana(unlocked: 2),
+        config: const SessionConfig(length: 12, mode: DirectionMode.mixed),
+        random: Random(3),
+      );
+      tallyAsked(session, correct: true);
+
+      final keys = session.runCards
+          .map((c) => '${c.note.id}/${c.direction.name}')
+          .toSet();
+      expect(keys.length, session.runCards.length,
+          reason: 'one entry per card, not per note');
+      expect(
+        session.runCards.map((c) => c.direction).toSet().length,
+        2,
+        reason: 'a mixed run asks both ways',
+      );
+    });
+
+    test('an introduction on its own logs nothing', () {
+      final session = Session(
+        library: kana(unlocked: 2),
+        config: const SessionConfig(length: 4, mode: DirectionMode.forward),
+        random: Random(3),
+      );
+      expect(session.isIntroducing, isTrue, reason: 'nothing seen yet');
+      session.acknowledgeIntroduction();
+
+      expect(session.runCards, isEmpty);
+      expect(session.shakyCount, 0);
+    });
+  });
+
+  group('settings reach the session', () {
+    test('the option count comes from the config', () {
+      for (final count in [3, 4, 6]) {
+        final options = buildOptions(
+          library: kana(unlocked: 8),
+          note: noteWithId(kana(), 'na'),
+          direction: Direction.forward,
+          random: Random(1),
+          count: count,
+        );
+        expect(options, hasLength(count));
+      }
+    });
+
+    test('the pool target comes from the config', () {
+      final deckSize = kana().notes.length;
+      for (final target in [3, 5, 8]) {
+        final session = Session(
+          library: kana(unlocked: 0),
+          config: SessionConfig(
+            length: 4,
+            mode: DirectionMode.forward,
+            poolTarget: target,
+          ),
+          random: Random(1),
+        );
+        // A target larger than the deck opens the whole deck and stops.
+        expect(session.library.unlockedCount, min(target, deckSize));
+      }
+    });
+  });
 }

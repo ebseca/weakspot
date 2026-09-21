@@ -13,15 +13,21 @@ import 'package:flutter/services.dart';
 
 import '../core/deck_import.dart';
 import '../core/model.dart';
+import '../core/settings.dart';
 import '../core/store.dart';
 import 'import_screen.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
 class CreateLibraryScreen extends StatefulWidget {
-  const CreateLibraryScreen({super.key, required this.repository});
+  const CreateLibraryScreen({
+    super.key,
+    required this.repository,
+    required this.settings,
+  });
 
   final LibraryRepository repository;
+  final SettingsController settings;
 
   @override
   State<CreateLibraryScreen> createState() => _CreateLibraryScreenState();
@@ -42,7 +48,15 @@ class _CreateLibraryScreenState extends State<CreateLibraryScreen> {
     super.dispose();
   }
 
-  String get _prompt => buildDeckPrompt(_topic.text);
+  /// English asks for nothing, so a default install produces exactly the
+  /// prompt it always has.
+  String get _prompt {
+    final language = widget.settings.settings.language;
+    return buildDeckPrompt(
+      _topic.text,
+      language: language.isDefault ? null : language.englishName,
+    );
+  }
 
   Future<void> _copy() async {
     await Clipboard.setData(ClipboardData(text: _prompt));

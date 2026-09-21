@@ -10,8 +10,11 @@ that constraint is load-bearing, not incidental.
 
 ```bash
 flutter analyze            # must be clean before building
-flutter test               # 253 tests, all must pass
+flutter test               # 293 tests, all must pass
 flutter build apk --release --target-platform android-arm64
+
+# Redraw the launcher icon after touching lib/ui/logo.dart
+flutter test tool/generate_icons.dart
 ```
 
 Targets are **Android and web**. Windows desktop does *not* build — Visual
@@ -62,15 +65,46 @@ what is installed.
 lib/core/     pure logic — model.dart and rules.dart import no Flutter
   model.dart        Note, CardState, Library, Direction, JSON
   rules.dart        every tunable number + the logic derived from it
-  session.dart      what to ask next, options, game modes
+  session.dart      what to ask next, options, game modes, the run log
   stats.dart        direction split, weak list
   deck_import.dart  parsing AI replies, building the prompt
   store.dart        shared_preferences persistence, bundled deck seeding
-lib/ui/       one file per screen, plus theme.dart and widgets.dart
+  settings.dart     Settings value, its store, and SettingsController
+lib/ui/       one file per screen, plus theme.dart, widgets.dart, logo.dart
+tool/         generate_icons.dart — run as a test, writes android res
 assets/decks/ hiragana.json, katakana.json — same JSON shape as an AI reply
 design/project/  the .dc.html mockups this was built from
 test/         mirrors lib/
 ```
+
+## Settings
+
+`SettingsController` is a plain `ChangeNotifier` passed down explicitly —
+no package, same as the repository. `main.dart` holds the first frame until
+it has loaded, so a Pro install never flashes the free mark.
+
+- **Deck language** is about the *content an AI writes*, not the app's own
+  text. There is no i18n in the app and none is planned; the setting adds
+  one rule to the generated prompt and nothing else.
+- **Answer options** and **cards in play** are carried into `SessionConfig`
+  as `options` and `poolTarget`, which default to the `rules.dart`
+  constants. `rules.dart` is still the spec; the settings move the dial,
+  they do not replace it.
+- **Weakspot Pro** is a local boolean. Nothing is charged, nothing is
+  checked, and the card says so out loud. It gates the 10-minute timed run
+  and the gold mark. Binding it to a real purchase later means changing
+  where `Settings.pro` comes from and nothing that reads it.
+
+## The mark and the icon
+
+`lib/ui/logo.dart` holds one painter. `WeakspotMark` draws it in the app;
+`tool/generate_icons.dart` renders the same function to every
+`mipmap-*` PNG — legacy, adaptive foreground and Android 13 monochrome —
+plus the adaptive XML. **The icons in git are generated. Never hand-edit
+them**; change `paintMark` and re-run the tool.
+
+The mark is a 3x3 grid of cards with the centre one lit and ringed: the
+whole deck, with the weak spot picked out.
 
 Mockup canvas: https://claude.ai/code/artifact/b5266778-5ebc-440f-be43-bf1f2e615655
 
@@ -129,6 +163,11 @@ deliberately removed.
 - **`bandForNote` taking the worst direction.** Caused the whole grid to
   turn yellow the moment a second direction was started, because a card
   with under four answers cannot be mastered. Now pooled.
+- **The whole-deck mastery grid on the results page.** Every session ended
+  on the same screen whatever had just happened, which made the page worth
+  nothing. Results now list only the cards *that run* asked, worst first,
+  with this run's answers as dots. The whole-deck grid is still on the
+  stats screen, one tap away behind "See the whole deck".
 
 ## Deck-content pitfalls
 
@@ -148,8 +187,13 @@ and ids default to the front.
 
 ## Outstanding
 
-- **Not a git repo.** Thirteen builds, no history, nothing to roll back to.
-  Raised repeatedly; the user has not asked for it yet.
+- **No GitHub remote.** The repo is committed locally; `gh` is not
+  installed on this machine, so pushing needs either `gh` or a remote added
+  by hand.
+- **The launcher icon does not change with Pro.** Only the in-app mark
+  does. Swapping the launcher icon at runtime needs an `activity-alias`
+  pair, which on MIUI can drop the home-screen shortcut — not done without
+  the user asking for it.
 - **System fonts**, not the IBM Plex / Noto Sans JP from the approved
   mockup. Bundling them means downloading ~5MB of font files.
 - Parked features with a note on where they would go are listed at the

@@ -5,15 +5,23 @@ import 'package:flutter/material.dart';
 
 import '../core/model.dart';
 import '../core/rules.dart';
+import '../core/settings.dart';
 import '../core/store.dart';
 import 'create_library_screen.dart';
+import 'logo.dart';
 import 'session_setup_screen.dart';
+import 'settings_screen.dart';
 import 'theme.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.repository});
+  const HomeScreen({
+    super.key,
+    required this.repository,
+    required this.settings,
+  });
 
   final LibraryRepository repository;
+  final SettingsController settings;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -49,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (_) => SessionSetupScreen(
           library: library,
           repository: widget.repository,
+          settings: widget.settings,
         ),
       ),
     );
@@ -67,7 +76,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _create() async {
     final created = await Navigator.of(context).push<Library>(
       MaterialPageRoute(
-        builder: (_) => CreateLibraryScreen(repository: widget.repository),
+        builder: (_) => CreateLibraryScreen(
+          repository: widget.repository,
+          settings: widget.settings,
+        ),
       ),
     );
     if (created == null || !mounted) return;
@@ -117,10 +129,21 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _openSettings() => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => SettingsScreen(controller: widget.settings),
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(child: _body()),
+    // Listens so the mark switches the moment Pro is turned on or off,
+    // without the settings screen having to hand anything back.
+    return ListenableBuilder(
+      listenable: widget.settings,
+      builder: (context, _) => Scaffold(
+        body: SafeArea(child: _body()),
+      ),
     );
   }
 
@@ -147,7 +170,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(22, 28, 22, 28),
       children: [
-        const _Header(),
+        _Header(
+          pro: widget.settings.settings.pro,
+          onSettings: _openSettings,
+        ),
         const SizedBox(height: 22),
         const Text('YOUR LIBRARIES', style: Type.sectionLabel),
         const SizedBox(height: 10),
@@ -211,26 +237,24 @@ class _CreateButton extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header();
+  const _Header({required this.pro, required this.onSettings});
+
+  final bool pro;
+  final VoidCallback onSettings;
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Text(
-          'Weakspot',
-          style: TextStyle(
-            fontSize: 23,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.4,
-            color: Palette.text,
-          ),
-        ),
-        SizedBox(height: 2),
-        Text(
-          'Everything stays on this device',
-          style: TextStyle(fontSize: 12, color: Palette.dim),
+        Expanded(child: Wordmark(pro: pro)),
+        const SizedBox(width: 8),
+        IconButton(
+          onPressed: onSettings,
+          icon: const Icon(Icons.settings_outlined, size: 22),
+          color: Palette.dim,
+          tooltip: 'Settings',
+          constraints: const BoxConstraints.tightFor(width: 44, height: 44),
+          padding: EdgeInsets.zero,
         ),
       ],
     );

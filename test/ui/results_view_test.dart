@@ -100,25 +100,51 @@ void main() {
     expect(find.text('/6'), findsOneWidget);
   });
 
-  testWidgets('draws every card in the deck, locked ones included',
+  testWidgets('lists what this run asked, not the whole deck',
       (tester) async {
-    final session = played(from: library(unlocked: 5));
+    final session = played(from: library(unlocked: 5), length: 6);
     await pumpResults(tester, session);
 
-    expect(find.text('All 7 cards'.toUpperCase()), findsOneWidget);
+    expect(find.text('THIS RUN'), findsOneWidget);
+
+    final asked = session.runCards.map((c) => c.note.id).toSet();
+    expect(asked, isNotEmpty);
     for (final note in _notes) {
-      expect(find.text(note.front), findsWidgets,
-          reason: '${note.id} should appear in the grid');
+      final matcher = asked.contains(note.id) ? findsWidgets : findsNothing;
+      expect(find.text(note.front), matcher,
+          reason: '${note.id} was '
+              '${asked.contains(note.id) ? '' : 'not '}asked this run');
     }
   });
 
-  testWidgets('explains what the colours mean', (tester) async {
-    await pumpResults(tester, played(from: library()));
+  testWidgets('reports each card as it went this run', (tester) async {
+    final session = played(from: library(), length: 6, correct: true);
+    await pumpResults(tester, session);
 
-    expect(find.textContaining('Mastered'), findsOneWidget);
-    expect(find.textContaining('Learning'), findsOneWidget);
-    expect(find.textContaining('Struggling'), findsOneWidget);
-    expect(find.text('Locked'), findsOneWidget);
+    for (final card in session.runCards) {
+      expect(find.text('${card.correct}/${card.asked}'), findsWidgets);
+    }
+    expect(find.textContaining('all clean'), findsOneWidget);
+  });
+
+  testWidgets('counts what needs work when answers were dropped',
+      (tester) async {
+    final session = played(from: library(), length: 6, correct: false);
+    await pumpResults(tester, session);
+
+    expect(session.shakyCount, greaterThan(0));
+    expect(find.textContaining('${session.shakyCount} to work on'),
+        findsOneWidget);
+  });
+
+  testWidgets('puts the worst card first', (tester) async {
+    final session = played(from: library(), length: 6, correct: false);
+    final cards = session.runCards;
+
+    expect(cards.length, greaterThan(1));
+    for (var i = 1; i < cards.length; i++) {
+      expect(cards[i - 1].winRate, lessThanOrEqualTo(cards[i].winRate));
+    }
   });
 
   testWidgets('announces what a cleared batch unlocked', (tester) async {
@@ -147,13 +173,18 @@ void main() {
     expect(find.textContaining('Master one'), findsOneWidget);
   });
 
-  testWidgets('hides the lock legend once everything is unlocked',
-      (tester) async {
-    final session = played(from: library(unlocked: 7));
+  testWidgets('a run that answered nothing says so rather than showing an '
+      'empty list', (tester) async {
+    final session = Session(
+      library: library(),
+      config: const SessionConfig(length: 4, mode: DirectionMode.forward),
+      random: Random(3),
+    )..stop();
+
     await pumpResults(tester, session);
 
-    expect(find.text('tap to read'), findsOneWidget);
-    expect(find.text('Locked'), findsNothing);
+    expect(find.text('THIS RUN'), findsOneWidget);
+    expect(find.textContaining('Nothing was answered'), findsOneWidget);
   });
 
   testWidgets('every control fires', (tester) async {
@@ -169,8 +200,16 @@ void main() {
     );
 
     await tester.tap(find.text('Done'));
-    await tester.tap(find.text('See weak spots'));
     await tester.tap(find.text('Play again'));
+
+    // The run list can be longer than the page, so the link under it is
+    // only built once it is scrolled to.
+    await tester.scrollUntilVisible(
+      find.text('See the whole deck'),
+      160,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('See the whole deck'));
     await tester.pumpAndSettle();
 
     expect(done, 1);
@@ -178,11 +217,11 @@ void main() {
     expect(replay, 1);
   });
 
-  testWidgets('tapping a card in the grid opens it', (tester) async {
+  testWidgets('tapping a card in the run list opens it', (tester) async {
     final session = played(from: library());
     await pumpResults(tester, session);
 
-    await tester.tap(find.text('な').last);
+    await tester.tap(find.text(session.runCards.first.prompt).first);
     await tester.pumpAndSettle();
 
     expect(find.text('RECENT ANSWERS'), findsOneWidget);

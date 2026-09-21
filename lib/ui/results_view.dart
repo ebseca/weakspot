@@ -7,7 +7,6 @@ import '../core/model.dart';
 import '../core/rules.dart';
 import '../core/session.dart';
 import 'card_detail.dart';
-import 'mastery_grid.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -49,37 +48,10 @@ class ResultsView extends StatelessWidget {
                   _PoolStatus(library: library),
                   const SizedBox(height: 16),
                 ],
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: SectionLabel('All ${library.notes.length} cards'),
-                    ),
-                    const SizedBox(width: 10),
-                    Flexible(
-                      child: Text(
-                        fullyUnlocked
-                            ? 'tap to read'
-                            : '${library.unlockedCount} unlocked',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Type.mono.copyWith(fontSize: 11),
-                      ),
-                    ),
-                  ],
-                ),
+                _RunHeading(session: session),
                 const SizedBox(height: 10),
-                MasteryGrid(
-                  library: library,
-                  onTapNote: (note) => showCardDetail(
-                    context,
-                    library: library,
-                    note: note,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                BandLegend(includeLocked: !fullyUnlocked),
-                const SizedBox(height: 8),
+                _RunList(session: session),
+                const SizedBox(height: 14),
                 Center(
                   child: TextButton(
                     onPressed: onStats,
@@ -87,7 +59,7 @@ class ResultsView extends StatelessWidget {
                       foregroundColor: Palette.accent,
                       textStyle: const TextStyle(fontSize: 14),
                     ),
-                    child: const Text('See weak spots'),
+                    child: const Text('See the whole deck'),
                   ),
                 ),
               ],
@@ -295,6 +267,219 @@ class _Unlocked extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// The heading over the run list.
+///
+/// Reports this run, not the deck: the whole-deck picture is one tap away
+/// on the stats screen, and repeating it here meant the page you saw after
+/// every single session was the same page, whatever you had just done.
+class _RunHeading extends StatelessWidget {
+  const _RunHeading({required this.session});
+
+  final Session session;
+
+  @override
+  Widget build(BuildContext context) {
+    final cards = session.runCards.length;
+    final shaky = session.shakyCount;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Flexible(child: SectionLabel('This run')),
+        const SizedBox(width: 10),
+        Flexible(
+          child: Text(
+            cards == 0
+                ? 'nothing answered'
+                : shaky == 0
+                    ? '$cards ${cards == 1 ? 'card' : 'cards'} · all clean'
+                    : '$cards ${cards == 1 ? 'card' : 'cards'} · '
+                        '$shaky to work on',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.right,
+            style: Type.mono.copyWith(
+              fontSize: 11,
+              color: shaky == 0 ? BandColor.mastered : BandColor.struggling,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Every card this run asked, worst first.
+class _RunList extends StatelessWidget {
+  const _RunList({required this.session});
+
+  final Session session;
+
+  @override
+  Widget build(BuildContext context) {
+    final cards = session.runCards;
+
+    if (cards.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        decoration: BoxDecoration(
+          color: Palette.panel,
+          borderRadius: BorderRadius.circular(13),
+          border: Border.all(color: Palette.line),
+        ),
+        child: Text(
+          session.introduced > 0
+              ? 'Cards were shown but none were answered.'
+              : 'Nothing was answered this run.',
+          style: Type.secondary,
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        for (var i = 0; i < cards.length; i++) ...[
+          if (i > 0) const SizedBox(height: 8),
+          _RunRow(
+            card: cards[i],
+            onTap: () => showCardDetail(
+              context,
+              library: session.library,
+              note: cards[i].note,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _RunRow extends StatelessWidget {
+  const _RunRow({required this.card, required this.onTap});
+
+  final RunCard card;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final band = bandForRate(card.winRate);
+
+    return Semantics(
+      button: true,
+      label: '${card.prompt} to ${card.answer}, '
+          '${card.correct} of ${card.asked} correct this run',
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(14, 11, 14, 11),
+          decoration: BoxDecoration(
+            color: Palette.panel,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Palette.line),
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 16,
+                child: Text(
+                  card.direction == Direction.forward ? '→' : '←',
+                  style: const TextStyle(
+                    fontFamily: monoFamily,
+                    fontSize: 14,
+                    color: Palette.faint,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      card.prompt,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: Palette.text,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      card.answer,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Type.secondary,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              _RunDots(answers: card.answers),
+              const SizedBox(width: 10),
+              Text(
+                '${card.correct}/${card.asked}',
+                style: TextStyle(
+                  fontFamily: monoFamily,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: BandColor.of(band),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// This run's answers as dots, in the order they happened.
+///
+/// Capped, because a timed run can hammer one card a dozen times and the
+/// row still has to fit a phone. The tally beside it stays exact.
+class _RunDots extends StatelessWidget {
+  const _RunDots({required this.answers});
+
+  final List<bool> answers;
+
+  static const int _max = 6;
+
+  @override
+  Widget build(BuildContext context) {
+    final shown = answers.length <= _max
+        ? answers
+        : answers.sublist(answers.length - _max);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (answers.length > _max)
+          Padding(
+            padding: const EdgeInsets.only(right: 4),
+            child: Text('+${answers.length - _max}',
+                style: Type.mono.copyWith(fontSize: 10)),
+          ),
+        for (var i = 0; i < shown.length; i++) ...[
+          if (i > 0) const SizedBox(width: 4),
+          Container(
+            width: 7,
+            height: 7,
+            decoration: BoxDecoration(
+              color:
+                  shown[i] ? BandColor.mastered : BandColor.struggling,
+              borderRadius: BorderRadius.circular(3.5),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

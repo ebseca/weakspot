@@ -8,6 +8,7 @@ import 'package:weakspot/core/store.dart';
 import 'package:weakspot/ui/session_screen.dart';
 import 'package:weakspot/ui/theme.dart';
 
+import '../core/settings_test.dart' show testSettings;
 import '../core/store_test.dart' show FakeStore;
 
 const Library _kana = Library(
@@ -49,6 +50,7 @@ Future<Session> pumpSession(
           store: store ?? FakeStore(),
           assetLoader: (_) async => throw UnimplementedError(),
         ),
+        settings: testSettings(),
         config: config,
         session: session,
       ),

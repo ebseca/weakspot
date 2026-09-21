@@ -5,8 +5,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'package:flutter/services.dart';
+
 import '../core/model.dart';
 import '../core/session.dart';
+import '../core/settings.dart';
 import '../core/store.dart';
 import 'results_view.dart';
 import 'stats_screen.dart';
@@ -21,12 +24,14 @@ class SessionScreen extends StatefulWidget {
     super.key,
     required this.library,
     required this.repository,
+    required this.settings,
     required this.config,
     this.session,
   });
 
   final Library library;
   final LibraryRepository repository;
+  final SettingsController settings;
   final SessionConfig config;
 
   /// Injected by tests so questions are deterministic.
@@ -93,6 +98,15 @@ class _SessionScreenState extends State<SessionScreen> {
 
   void _submit(String option) {
     setState(() => _session.submit(option));
+    // Felt before it is read. A wrong answer gets the heavier buzz, so
+    // the hand knows the outcome before the eye finds the highlight.
+    if (widget.settings.settings.haptics) {
+      if (_session.wasCorrect) {
+        HapticFeedback.selectionClick();
+      } else {
+        HapticFeedback.heavyImpact();
+      }
+    }
     _persist();
   }
 

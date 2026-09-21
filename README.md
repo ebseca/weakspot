@@ -48,6 +48,11 @@ you opened by hand.
 One question in five goes to a card you have already mastered, so the things
 you learned first do not quietly rot.
 
+When a run ends you get **that run**, not a progress report: every card it
+asked, worst first, with the answers you gave as dots beside them. The
+whole-deck picture is still there, one tap away — it just is not what you
+are shown after every single session.
+
 A card's colour on the grid pools **both directions** into one record.
 Taking the worst direction instead meant that answering a freshly started
 direction twice dropped a note that had been green for weeks back to
@@ -66,6 +71,27 @@ the reading-against-writing split.
 | Struggling | under 50% |
 | Learning | 50–89% |
 | Mastered | 90% or better |
+
+## Settings
+
+A handful, all of which do something:
+
+| Setting | What it moves |
+|---|---|
+| Deck language | The language a generated deck's answers and hints are written in |
+| Answer options | 3, 4 or 6 choices a question |
+| Cards in play | 3, 5 or 8 unmastered cards held open at once |
+| Haptics | A buzz on answering — lighter when right |
+
+**Deck language** is about the cards an AI writes for you, not the app's
+own text. The app is in English and there is no translation of it; the
+setting adds one rule to the prompt you paste, so a Turkish speaker
+learning Thai gets Thai on the front and Turkish on the back.
+
+**Weakspot Pro** is a button that says "Subscribe now", charges nothing,
+and turns on a 10-minute timed run and a gold mark. It is scaffolding for a
+subscription that does not exist yet, and the card says as much rather than
+implying otherwise. Turning it off puts everything back.
 
 ## Making your own libraries
 
@@ -126,7 +152,9 @@ lib/
   ui/
     theme.dart       the one palette and type scale
     widgets.dart     shared pieces
+    logo.dart        the mark, shared with the icon generator
     home_screen.dart           the library list
+    settings_screen.dart       options, and the Pro card
     session_setup_screen.dart  length and direction
     session_screen.dart        ask, reveal, next
     results_view.dart          the end-of-session page
@@ -134,9 +162,18 @@ lib/
     stats_screen.dart          progress and weak spots
     create_library_screen.dart the topic box and prompt
     import_screen.dart         paste or pick a file
+tool/
+  generate_icons.dart  redraws every launcher icon from logo.dart
 assets/decks/        hiragana.json, katakana.json
 design/project/      the screen mockups this was built from
 test/                mirrors lib/
+```
+
+The launcher icon is generated, never drawn by hand. Change `paintMark` in
+`lib/ui/logo.dart` and run:
+
+```bash
+flutter test tool/generate_icons.dart
 ```
 
 `rules.dart` is the spec. If a progression rule is ever argued about, it is
@@ -180,9 +217,8 @@ added the prompt generator and deck import.
 All five phases are in. What was parked along the way, and where it would
 go:
 
-- **Difficulty setting** — 3/4/6 options and lookalike distractors.
-  `optionCount` in `rules.dart`, and `buildOptions` already prefers
-  authored distractors.
+- **Lookalike distractors as a difficulty knob** — `buildOptions` already
+  prefers the ones a deck author wrote; nothing chooses to lean on them.
 - **Bundled fonts** — the mockup used IBM Plex and Noto Sans JP; the app
   runs on system fonts. `pubspec.yaml` and `ui/theme.dart`.
 - **Editing cards in the app** — today a deck is re-imported to change it.
