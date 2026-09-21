@@ -9,6 +9,8 @@ library;
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'launcher_icon.dart';
+
 /// The language new decks are generated in.
 ///
 /// This is about the *content* the AI writes, not the app's own text: a
@@ -175,12 +177,17 @@ class PrefsSettingsStore implements SettingsStore {
 /// A [ChangeNotifier] rather than a state-management package, matching the
 /// rest of the app: one object, passed down explicitly.
 class SettingsController extends ChangeNotifier {
-  SettingsController({SettingsStore? store, Settings? initial})
-      : _store = store ?? PrefsSettingsStore(),
+  SettingsController({
+    SettingsStore? store,
+    LauncherIcon? launcherIcon,
+    Settings? initial,
+  })  : _store = store ?? PrefsSettingsStore(),
+        _launcherIcon = launcherIcon ?? const PlatformLauncherIcon(),
         _settings = initial ?? const Settings(),
         _loaded = initial != null;
 
   final SettingsStore _store;
+  final LauncherIcon _launcherIcon;
   Settings _settings;
   bool _loaded;
 
@@ -199,12 +206,21 @@ class SettingsController extends ChangeNotifier {
     }
     _loaded = true;
     notifyListeners();
+
+    // Reconcile on every launch. The stored flag is the truth; which
+    // launcher alias is enabled is a shadow of it, and a reinstall or a
+    // cleared package state can leave the two disagreeing.
+    await _launcherIcon.use(pro: _settings.pro);
   }
 
   Future<void> update(Settings settings) async {
     if (settings == _settings) return;
+
+    final iconChanged = settings.pro != _settings.pro;
     _settings = settings;
     notifyListeners();
+
     await _store.save(settings);
+    if (iconChanged) await _launcherIcon.use(pro: settings.pro);
   }
 }

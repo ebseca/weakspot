@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:weakspot/core/launcher_icon.dart';
 import 'package:weakspot/core/settings.dart';
 
 /// A settings store held in memory, so a test never touches the platform.
@@ -24,9 +25,21 @@ class FakeSettingsStore implements SettingsStore {
   }
 }
 
+/// Records which launcher icon it was asked for.
+class FakeLauncherIcon implements LauncherIcon {
+  final List<bool> asked = [];
+
+  @override
+  Future<void> use({required bool pro}) async => asked.add(pro);
+}
+
 /// A controller a widget test can pump straight away.
 SettingsController testSettings([Settings initial = const Settings()]) =>
-    SettingsController(store: FakeSettingsStore(initial), initial: initial);
+    SettingsController(
+      store: FakeSettingsStore(initial),
+      launcherIcon: FakeLauncherIcon(),
+      initial: initial,
+    );
 
 void main() {
   group('Settings', () {
@@ -83,7 +96,8 @@ void main() {
 
     test('loading publishes what was stored', () async {
       final store = FakeSettingsStore(const Settings(pro: true));
-      final controller = SettingsController(store: store);
+      final controller =
+          SettingsController(store: store, launcherIcon: FakeLauncherIcon());
 
       var notified = 0;
       controller.addListener(() => notified += 1);
@@ -96,8 +110,10 @@ void main() {
 
     test('unreadable storage falls back to defaults rather than failing',
         () async {
-      final controller =
-          SettingsController(store: FakeSettingsStore()..failOnLoad = true);
+      final controller = SettingsController(
+        store: FakeSettingsStore()..failOnLoad = true,
+        launcherIcon: FakeLauncherIcon(),
+      );
 
       await controller.load();
 
@@ -107,7 +123,8 @@ void main() {
 
     test('an update is published and written', () async {
       final store = FakeSettingsStore();
-      final controller = SettingsController(store: store);
+      final controller =
+          SettingsController(store: store, launcherIcon: FakeLauncherIcon());
       await controller.load();
 
       var notified = 0;
@@ -121,12 +138,59 @@ void main() {
 
     test('setting the same value again writes nothing', () async {
       final store = FakeSettingsStore();
-      final controller = SettingsController(store: store);
+      final controller =
+          SettingsController(store: store, launcherIcon: FakeLauncherIcon());
       await controller.load();
 
       await controller.update(const Settings());
 
       expect(store.saves, 0);
+    });
+  });
+
+  group('the launcher icon follows Pro', () {
+    test('loading reconciles the icon with what was stored', () async {
+      final icon = FakeLauncherIcon();
+      final controller = SettingsController(
+        store: FakeSettingsStore(const Settings(pro: true)),
+        launcherIcon: icon,
+      );
+
+      await controller.load();
+
+      expect(icon.asked, [true],
+          reason: 'a Pro install gets the Pro icon back on every launch');
+    });
+
+    test('subscribing swaps it, and turning Pro off swaps it back',
+        () async {
+      final icon = FakeLauncherIcon();
+      final controller = SettingsController(
+        store: FakeSettingsStore(),
+        launcherIcon: icon,
+      );
+      await controller.load();
+      icon.asked.clear();
+
+      await controller.update(const Settings(pro: true));
+      await controller.update(const Settings());
+
+      expect(icon.asked, [true, false]);
+    });
+
+    test('a change that leaves Pro alone does not touch the icon', () async {
+      final icon = FakeLauncherIcon();
+      final controller = SettingsController(
+        store: FakeSettingsStore(),
+        launcherIcon: icon,
+      );
+      await controller.load();
+      icon.asked.clear();
+
+      await controller.update(const Settings(optionCount: 6));
+      await controller.update(const Settings(optionCount: 6, cardsInPlay: 8));
+
+      expect(icon.asked, isEmpty);
     });
   });
 }

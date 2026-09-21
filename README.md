@@ -89,9 +89,10 @@ setting adds one rule to the prompt you paste, so a Turkish speaker
 learning Thai gets Thai on the front and Turkish on the back.
 
 **Weakspot Pro** is a button that says "Subscribe now", charges nothing,
-and turns on a 10-minute timed run and a gold mark. It is scaffolding for a
-subscription that does not exist yet, and the card says as much rather than
-implying otherwise. Turning it off puts everything back.
+and turns on a 10-minute timed run and a gold mark — in the app *and* on
+the home screen, which swaps to a gold launcher icon. It is scaffolding
+for a subscription that does not exist yet, and the card says as much
+rather than implying otherwise. Turning it off puts everything back.
 
 ## Making your own libraries
 
@@ -169,8 +170,8 @@ design/project/      the screen mockups this was built from
 test/                mirrors lib/
 ```
 
-The launcher icon is generated, never drawn by hand. Change `paintMark` in
-`lib/ui/logo.dart` and run:
+Both launcher icons — the everyday one and the Pro one — are generated,
+never drawn by hand. Change `paintMark` in `lib/ui/logo.dart` and run:
 
 ```bash
 flutter test tool/generate_icons.dart

@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # of the product and file versions while build-number is used as the build suffix.
 # Minor tracks the build phase, build number increments with it, so the
 # phone's app info says which build is installed.
-version: 0.10.0+14
+version: 0.10.1+15
 
 environment:
   sdk: ^3.12.2

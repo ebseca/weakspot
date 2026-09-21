@@ -99,12 +99,40 @@ it has loaded, so a Pro install never flashes the free mark.
 
 `lib/ui/logo.dart` holds one painter. `WeakspotMark` draws it in the app;
 `tool/generate_icons.dart` renders the same function to every
-`mipmap-*` PNG — legacy, adaptive foreground and Android 13 monochrome —
-plus the adaptive XML. **The icons in git are generated. Never hand-edit
+`mipmap-*` PNG — legacy, adaptive foreground and Android 13 monochrome,
+in both the standard and the Pro colourway — plus the adaptive XML and the
+background colours. **The icons in git are generated. Never hand-edit
 them**; change `paintMark` and re-run the tool.
 
 The mark is a 3x3 grid of cards with the centre one lit and ringed: the
 whole deck, with the weak spot picked out.
+
+### Swapping the launcher icon
+
+Android has no "set my icon" call, so the manifest declares **two
+`activity-alias` entries** pointing at `MainActivity` — `.Launcher` with
+the everyday icon (enabled) and `.LauncherPro` with the gold one
+(disabled). `MainActivity.kt` exposes a method channel that enables one
+and disables the other; `SettingsController` calls it whenever `pro`
+changes, and again on every `load()` so the stored flag stays the truth.
+
+Three things that will bite if they are changed:
+
+1. **MainActivity must not carry the LAUNCHER intent-filter.** The aliases
+   do. Two enabled entries put the app in the drawer twice.
+2. **Enable before disabling.** An instant with no enabled launcher entry
+   is what makes an app vanish from the home screen rather than change.
+3. **`DONT_KILL_APP`.** Without it Android restarts the process the moment
+   the component changes, so tapping Subscribe would close the app.
+
+Verify a build with:
+
+```powershell
+& $adb shell "cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.LAUNCHER com.ebseca.weakspot"
+```
+
+It should print `.Launcher` or `.LauncherPro`, never both and never
+`.MainActivity`.
 
 Mockup canvas: https://claude.ai/code/artifact/b5266778-5ebc-440f-be43-bf1f2e615655
 
@@ -190,10 +218,6 @@ and ids default to the front.
 - **No GitHub remote.** The repo is committed locally; `gh` is not
   installed on this machine, so pushing needs either `gh` or a remote added
   by hand.
-- **The launcher icon does not change with Pro.** Only the in-app mark
-  does. Swapping the launcher icon at runtime needs an `activity-alias`
-  pair, which on MIUI can drop the home-screen shortcut — not done without
-  the user asking for it.
 - **System fonts**, not the IBM Plex / Noto Sans JP from the approved
   mockup. Bundling them means downloading ~5MB of font files.
 - Parked features with a note on where they would go are listed at the
