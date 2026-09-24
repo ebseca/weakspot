@@ -46,3 +46,28 @@ app.*.map.json
 
 # Claude Code per-machine settings (launch.json is shared, this is not)
 .claude/settings.local.json
+
+# ---------------------------------------------------------------------------
+# Signing material. NEVER commit any of this.
+#
+# The upload key is the app's permanent identity on Google Play: anyone holding
+# it can publish updates as you, and losing it means you cannot update the app
+# at all. The real key lives in C:\bigideas\vault\flashcards, outside the repo;
+# these rules are the second line of defence.
+# ---------------------------------------------------------------------------
+key.properties
+**/key.properties
+*.jks
+*.keystore
+*.p12
+**/*.jks
+**/*.keystore
+**/*.p12
+
+# Local secrets and environment files
+*.env
+.env.local
+
+# Build outputs that sometimes escape /build/
+*.apk
+*.aab

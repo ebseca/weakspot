@@ -22,7 +22,7 @@ Studio is missing the "Desktop development with C++" workload.
 
 ### Installing on the phone
 
-The phone is a Xiaomi (`23090RA98I`, id `JRMZHINVIFJNQG45`). Three quirks
+The phone is a Xiaomi Redmi (`23090RA98I`, HyperOS). Three quirks
 cost real time if rediscovered:
 
 1. **Use PowerShell for `adb`, never Bash.** Git Bash rewrites `/sdcard/…`
@@ -230,11 +230,48 @@ Pasting a corrected deck with the same name offers to **replace** the
 existing library, keeping all recorded answers. Card state is keyed by id,
 and ids default to the front.
 
+## Release
+
+Same setup as eyetrainer (`C:igideas\eyetrainer`, `store/RELEASE.md`
+there), deliberately.
+
+- **Upload key:** `C:igideasaultlashcards\weakspot-upload.p12`,
+  alias `upload`, owner `CN=Weakspot, O=bigideas, C=GB`. The password exists
+  only in `C:igideasaultlashcards\key.properties` and was never
+  printed. **Never commit either file, and never print the password.**
+  Losing the vault means the app can never be updated.
+- Gradle reads the properties path from `WEAKSPOT_KEY_PROPERTIES` (set at
+  user scope), else `android/key.properties`, else **silently falls back to
+  debug signing — which Play rejects.** Always check the signer:
+  `keytool -printcert -jarfile build/app/outputs/bundle/release/app-release.aab`
+  must say `CN=Weakspot`. A shell started before the variable was set will
+  not see it; pass it explicitly.
+- `flutter build appbundle --release`. R8 and resource shrinking are on;
+  `proguard-rules.pro` keeps `MainActivity`, because the launcher aliases
+  target it by name.
+- **The phone's sideloaded build is debug-signed.** Play's build is signed
+  with a different key, so it cannot install over the sideload — Android
+  refuses a signature change. Getting the Play build means uninstalling the
+  sideload first, which wipes local progress. To test minified code on the
+  phone *without* losing data, build an APK with the variable unset (debug
+  signature, same R8 pass) and `adb install -r` that.
+- `versionCode` (after `+` in pubspec) must increase on every upload.
+- `store/LISTING.md` holds every Console answer and why it is true;
+  `store/RELEASE.md` is the process and its status.
+- Store graphics: `flutter test tool/generate_store_assets.dart` (Windows
+  only — it loads Segoe UI by hand, since tests render text as boxes).
+- Privacy policy: `docs/index.html`, served by GitHub Pages at
+  `https://ebseca.github.io/weakspot/`. `store/PRIVACY_POLICY.md` is the same
+  text; change both together.
+- Personal developer account: production needs a **closed test with 12+
+  testers for 14 days** first.
+
 ## Outstanding
 
-- **No GitHub remote.** The repo is committed locally; `gh` is not
-  installed on this machine, so pushing needs either `gh` or a remote added
-  by hand.
+- **"Subscribe now" on Play.** Answered as *no in-app purchases*, which is
+  true. The card states nothing is charged. If a reviewer reads the button
+  as a fake subscription, the fix is wording (e.g. "Turn on Pro — free"), not
+  code.
 - **System fonts**, not the IBM Plex / Noto Sans JP from the approved
   mockup. Bundling them means downloading ~5MB of font files.
 - Parked features with a note on where they would go are listed at the

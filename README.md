@@ -7,8 +7,7 @@ targets whatever you are currently worst at, rather than marching through a
 deck in order. Nothing leaves the device — there is no account, no sync and
 no network call anywhere in the app.
 
-Working name; change it in `lib/main.dart` and `pubspec.yaml` if you want
-another.
+On Google Play as `com.ebseca.weakspot`.
 
 ## How it works
 
@@ -230,3 +229,13 @@ go:
 
 Controls belonging to later phases are deliberately absent rather than
 present and dead, so everything on screen works.
+
+## Privacy
+
+Weakspot collects nothing. It requests no internet permission and no
+permissions that need your approval; everything it records stays on the
+device. Full policy: <https://ebseca.github.io/weakspot/>
+
+## Licence
+
+GNU General Public License v3.0 — see [LICENSE](LICENSE).
