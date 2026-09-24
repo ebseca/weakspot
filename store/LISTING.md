@@ -123,15 +123,23 @@ credentials.
 
 Category: **Reference, News, or Educational**
 
-Every content question is **No**: no violence, no sexuality, no profanity, no
-controlled substances, no gambling, no user communication, no location
-sharing, no personal information sharing, no digital purchases.
+Category chosen: **All Other App Types**. Every content question is **No**
+except "primarily a news or educational product", which is **Yes**: no
+ratings-relevant content, no user interaction, no age-restricted goods, no
+location sharing, no digital purchases (Pro is free), no cash rewards or NFTs,
+not a browser.
+
+> **"Content not in the initial download, e.g. generated AI content": No.**
+> This is the one that needs thought. The app fetches nothing and has no AI;
+> the user pastes text they obtained elsewhere, and it stays on their own
+> device. Nothing is featured, promoted or served by the app.
+
+Result as submitted: ClassInd all ages, ESRB Everyone, PEGI 3, USK all ages.
 
 > **User-generated content:** decks a user makes stay on their own device and
 > are never shared with anyone, so there is no UGC in Play's sense (content
 > other users can see).
 
-Expected outcome: PEGI 3 / ESRB Everyone / USK 0.
 
 ## Target audience and content
 
