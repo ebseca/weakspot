@@ -263,8 +263,17 @@ there), deliberately.
 - Privacy policy: `docs/index.html`, served by GitHub Pages at
   `https://ebseca.github.io/weakspot/`. `store/PRIVACY_POLICY.md` is the same
   text; change both together.
-- Personal developer account: production needs a **closed test with 12+
-  testers for 14 days** first.
+- **Play status:** `1.0.0 (17)` live on **internal testing** since 24 Sep
+  2026, testers from the `ben` and `biz` email lists (shared with
+  eyetrainer). Personal developer account, so production needs a **closed
+  test with 12+ testers for 14 days** first.
+- **Bundle uploads are manual.** Browser automation can't hand a page a file
+  over 10 MB; the .aab is ~47 MB. Ask for the drag-and-drop, fill the rest.
+- **Play Console via browser automation:** screenshots are unreliable and
+  element refs go stale on every re-render. What worked: reading state with
+  `document.body.innerText`, clicking buttons with `.click()` in page JS, and
+  setting inputs through the native value setter plus `input`/`change`
+  events. Always reload and re-read to confirm a save actually stuck.
 
 ## Outstanding
 

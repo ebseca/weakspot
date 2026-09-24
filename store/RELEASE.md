@@ -56,7 +56,7 @@ Must print `Owner: CN=Weakspot, O=bigideas, C=GB`. Version `1.0.0+17`,
 Public repo `github.com/ebseca/weakspot`, GPL-3.0. Pages serves `docs/` at
 `https://ebseca.github.io/weakspot/` — the privacy policy Play links to.
 
-## 5. Play Console — DONE except the bundle
+## 5. Play Console — DONE
 
 App `Weakspot`, package `com.ebseca.weakspot`, created on the
 "Bad Decisions Make Good Apps" personal account.
@@ -75,16 +75,18 @@ App `Weakspot`, package `com.ebseca.weakspot`, created on the
 | Data safety — collects and shares nothing | done |
 | Content rating — ESRB Everyone, PEGI 3, USK all ages | done |
 | Internal testing testers — lists `ben` and `biz` | done |
-| **Internal testing release — upload the .aab** | **outstanding** |
+| Internal testing release `1.0.0 (17)` | **live** — published 24 Sep 2026, available to internal testers |
 
 Every answer and its reason is in `LISTING.md`.
 
-### Why the bundle is the one manual step
+Play reports **8.25 MB** per-device download for the 46.8 MB bundle.
+
+### Uploading bundles
 
 The browser automation can only hand files under 10 MB to a page, and the
-bundle is 46.8 MB. Drag
-`build/app/outputs/bundle/release/app-release.aab` into the draft internal
-testing release, then save and roll it out.
+bundle is 46.8 MB, so the upload itself is a drag-and-drop by hand:
+`build/app/outputs/bundle/release/app-release.aab` into the release's
+"App bundles" box. Everything else in a release can be filled in for you.
 
 ## 6. After internal testing
 
