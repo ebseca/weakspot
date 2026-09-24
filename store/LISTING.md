@@ -121,8 +121,6 @@ credentials.
 
 ## Content rating questionnaire
 
-Category: **Reference, News, or Educational**
-
 Category chosen: **All Other App Types**. Every content question is **No**
 except "primarily a news or educational product", which is **Yes**: no
 ratings-relevant content, no user interaction, no age-restricted goods, no
